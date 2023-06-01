@@ -35,33 +35,63 @@
 // console.log(exec);
 
 // FS
-const fs = require('fs');
-const path = require('path');
-
-const text2Path = path.join(__dirname, 'folder', 'folder2', 'text2.txt');
-
-// fs.writeFile(path.join(__dirname, 'folder', 'folder2', 'text.json'), 'Hello from Okten', (err) => {
-//     if (err) throw new Error(err.message);
-// });
-
-// fs.writeFile(text2Path, 'My name is Harry Potter', (err) => {
-//     if (err) throw new Error(err.message);
-// });
-
-// fs.readFile(text2Path, {encoding: 'utf-8'}, (err, data) => {
-//     if (err) throw new Error(err.message);
-//     console.log(data);
-// });
-
-// fs.appendFile(text2Path, '\nMy name is Tom Readle', (err) => {
-//     if (err) throw new Error(err.message);
-// });
-
-// fs.truncate(text2Path, (err) => {
-//     if (err) throw new Error(err.message);
-// });
-
-// fs.unlink(text2Path, (err) => {
-//     if (err) throw new Error(err.message);
-// });
-
+// const fs = require('fs');
+// const path = require('path');
+//
+// // const text2Path = path.join(__dirname, 'folder', 'folder2', 'text2.txt');
+//
+// // fs.writeFile(path.join(__dirname, 'folder', 'folder2', 'text.json'), 'Hello from Okten', (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+//
+// // fs.writeFile(text2Path, 'My name is Harry Potter', (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+//
+// // fs.readFile(text2Path, {encoding: 'utf-8'}, (err, data) => {
+// //     if (err) throw new Error(err.message);
+// //     console.log(data);
+// // });
+//
+// // fs.appendFile(text2Path, '\nMy name is Tom Readle', (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+// //
+// // fs.truncate(text2Path, (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+// //
+// // fs.unlink(text2Path, (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+// //
+// // fs.mkdir(path.join(__dirname, 'folder', 'folder1'), (err) => {
+// //     if (err) throw new Error(err.message);
+// // })
+// //
+// // fs.mkdir(path.join(__dirname, 'folder', 'folder3', 'text.txt'),  { recursive: true },(err) => {
+// //     if (err) throw new Error(err.message);
+// // })
+// //
+// // fs.mkdir(path.join(__dirname, 'folder', 'folder4', 'folder5', 'folder6', 'text.txt'), {recursive: true}, (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+// //
+// // fs.rmdir(path.join(__dirname, 'folder', 'folder3'), (err) => {
+// //     if (err) throw new Error(err.message);
+// // });
+// //
+// // fs.readdir(path.join(__dirname, 'folder'), (err, files) => {
+// //     if (err) throw new Error(err.message);
+// //     console.log(files);
+// // });
+// //
+// // fs.readdir(path.join(__dirname, 'folder'), {withFileTypes: true}, (err, files) => {
+// //     if (err) throw new Error(err.message);
+// //     files.map(file => console.log(file.name, file.isDirectory()));
+// // });
+// //
+// // fs.rename(path.join(__dirname, 'folder', 'folder2', 'text.txt'), path.join(__dirname, 'folder', 'folder1', 'text1.json'),
+// //     (err) => {
+// //     if (err) throw new Error(err.message);
+// // })
