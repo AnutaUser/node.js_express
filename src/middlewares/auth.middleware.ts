@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ETokenType } from '../enums';
+import { EActionTokenType, ETokenType } from '../enums';
 import { ApiError } from '../errors';
-import { Token } from '../models';
+import { Action, Token } from '../models';
 import { tokenService } from '../services';
 
 class AuthMiddleware {
@@ -59,6 +59,34 @@ class AuthMiddleware {
     } catch (e) {
       next(new ApiError(e.message, e.status));
     }
+  }
+
+  public checkActionToken(tokenType: EActionTokenType) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const actionToken = req.params.token;
+
+        if (!actionToken) {
+          throw new ApiError('No token', 401);
+        }
+
+        const tokenPayload = await tokenService.checkToken(
+          actionToken,
+          tokenType
+        );
+
+        const tokenFromDB = await Action.findOne({ actionToken });
+
+        if (!tokenFromDB) {
+          throw new ApiError('No token', 401);
+        }
+
+        req.res.locals = { tokenPayload, tokenFromDB };
+        next();
+      } catch (e) {
+        throw new ApiError(e.message, e.status);
+      }
+    };
   }
 }
 

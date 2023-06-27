@@ -1,6 +1,8 @@
-import { EEmailActions } from '../enums';
+import { Types } from 'mongoose';
+
+import { EActionTokenType, EEmailActions } from '../enums';
 import { ApiError } from '../errors';
-import { OldPassword, Token, User } from '../models';
+import { Action, OldPassword, Token, User } from '../models';
 import { ICredentials, ITokenPayload, ITokensPair, IUser } from '../types';
 import { emailService } from './email.service';
 import { passwordService } from './password.service';
@@ -77,18 +79,21 @@ class AuthService {
     _id: string
   ): Promise<void> {
     try {
-      const userOldPass = await OldPassword.find({ _user: _id });
+      const [userOldPass, user] = await Promise.all([
+        OldPassword.find({ _user: _id }),
+        User.findById(_id),
+      ]);
+
+      const passwords = [...userOldPass, { password: user.password }];
 
       await Promise.all(
-        userOldPass.map(async ({ password: hash }) => {
+        passwords.map(async ({ password: hash }) => {
           const isMatched = await passwordService.compare(newPassword, hash);
           if (isMatched) {
             throw new ApiError('Wrong new password', 400);
           }
         })
       );
-
-      const user = await User.findById(_id);
 
       const isMatched = await passwordService.compare(
         oldPassword,
@@ -107,6 +112,50 @@ class AuthService {
       ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async forgotPassword(
+    userId: Types.ObjectId,
+    email: string
+  ): Promise<void> {
+    try {
+      const actionToken = await tokenService.generateActionToken(
+        userId,
+        EActionTokenType.Forgot
+      );
+
+      await Promise.all([
+        Action.create({
+          actionToken,
+          tokenType: EActionTokenType.Forgot,
+          _user: userId,
+        }),
+        emailService.sendMail(email, EEmailActions.FORGOT_PASSWORD, {
+          actionToken,
+        }),
+      ]);
+    } catch (e) {
+      throw new ApiError('', 400);
+    }
+  }
+
+  public async setForgotPassword(
+    password: string,
+    tokenPayload: ITokenPayload
+  ): Promise<void> {
+    try {
+      const hash = await passwordService.hash(password);
+
+      await Promise.all([
+        User.updateOne({ _id: tokenPayload._id }, { password: hash }),
+        Action.deleteMany({
+          _id: tokenPayload._id,
+          tokenType: EActionTokenType.Forgot,
+        }),
+      ]);
+    } catch (e) {
+      throw new ApiError('', 400);
     }
   }
 }

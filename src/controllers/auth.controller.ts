@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { ApiError } from '../errors';
-import { authService, tokenService } from '../services';
+import { authService } from '../services';
 import { ITokensPair } from '../types';
 
 class AuthController {
@@ -65,17 +65,35 @@ class AuthController {
     }
   }
 
-  public async sendActivateToken(
+  public async forgotPassword(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response<void>> {
     try {
-      const activateToken = await tokenService.generateActivateToken({
-        _id: req.body._id,
-        username: req.body.username,
-      });
-      return res.status(201).json(activateToken);
+      const { email } = req.body;
+      const { user } = req.res.locals;
+
+      await authService.forgotPassword(user._id, email);
+
+      return res.sendStatus(200);
+    } catch (e) {
+      next(new ApiError(e.message, e.status));
+    }
+  }
+
+  public async setForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<void>> {
+    try {
+      const { password } = req.body;
+      const { tokenPayload } = req.res.locals;
+
+      await authService.setForgotPassword(password, tokenPayload);
+
+      return res.sendStatus(201);
     } catch (e) {
       next(new ApiError(e.message, e.status));
     }
@@ -87,11 +105,11 @@ class AuthController {
     next: NextFunction
   ): Promise<Response<void>> {
     try {
-      const activateToken = await tokenService.generateActivateToken({
-        _id: req.body._id,
-        username: req.body.username,
-      });
-      return res.status(201).json(activateToken);
+      // const activateToken = await tokenService.generateActivateToken({
+      //   _id: req.body._id,
+      //   username: req.body.username,
+      // });
+      return res.status(201);
     } catch (e) {
       next(new ApiError(e.message, e.status));
     }
