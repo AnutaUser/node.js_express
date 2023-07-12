@@ -4,10 +4,11 @@ import multer from 'multer';
 import { createReadStream } from 'streamifier';
 
 import { configs } from '../configs';
+import { ESmsActions } from '../enums';
 import { ApiError } from '../errors';
 import { userMapper } from '../mapers';
 import { User } from '../models';
-import { s3Service, userService } from '../services';
+import { s3Service, smsService, userService } from '../services';
 import { IUser } from '../types';
 
 class UserController {
@@ -70,6 +71,10 @@ class UserController {
   ): Promise<Response<void>> {
     try {
       const { userId } = req.params;
+
+      const user = await User.findById(userId);
+
+      await smsService.sendSms(user.phone, ESmsActions.DELETE, user.username);
 
       await userService.deleteByUserId(userId);
 

@@ -1,11 +1,17 @@
 import { Types } from 'mongoose';
 
-import { EActionTokenType, EEmailActions, EStatus } from '../enums';
+import {
+  EActionTokenType,
+  EEmailActions,
+  ESmsActions,
+  EStatus,
+} from '../enums';
 import { ApiError } from '../errors';
 import { Action, OldPassword, Token, User } from '../models';
 import { ICredentials, ITokenPayload, ITokensPair, IUser } from '../types';
 import { emailService } from './email.service';
 import { passwordService } from './password.service';
+import { smsService } from './sms.service';
 import { tokenService } from './token.service';
 
 class AuthService {
@@ -26,10 +32,13 @@ class AuthService {
           tokenType: EActionTokenType.Activate,
           _user: user._id,
         }),
+
         emailService.sendMail(body.email, EEmailActions.REGISTER, {
           username: body.username,
           activateToken,
         }),
+
+        smsService.sendSms(body.phone, ESmsActions.REGISTER, body.username),
       ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);

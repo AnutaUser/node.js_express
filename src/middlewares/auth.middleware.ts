@@ -27,6 +27,7 @@ class AuthMiddleware {
       }
 
       req.res.locals.tokenInfo = payload;
+      req.res.locals.entity = entity;
       next();
     } catch (e) {
       next(new ApiError(e.message, e.status));

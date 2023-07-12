@@ -35,4 +35,8 @@ export const configs = {
   AWS_S3_ACL: process.env.AWS_S3_ACL,
   AWS_S3_URL: process.env.AWS_S3_URL,
   AWS_S3_URL_VIDEO: process.env.AWS_S3_URL_VIDEO,
+
+  TWILIO_SERVICE_SID: process.env.TWILIO_SERVICE_SID,
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
 };
