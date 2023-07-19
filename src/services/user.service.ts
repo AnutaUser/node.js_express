@@ -3,13 +3,38 @@ import { UploadedFile } from 'express-fileupload';
 import { configs } from '../configs';
 import { ApiError } from '../errors';
 import { User } from '../models';
-import { IUser } from '../types';
+import { IPaginationResponse, IQuery, IUser } from '../types';
 import { s3Service } from './s3.service';
 
 class UserService {
-  public async findAll(): Promise<IUser[]> {
+  public async findAll(query: IQuery): Promise<IPaginationResponse<IUser>> {
     try {
-      return await User.find();
+      const queryStr = JSON.stringify(query);
+      const queryObj = JSON.parse(
+        queryStr.replace(/\b(gte|lte|gt|lt)\b/, (match) => `$${match}`)
+      );
+
+      const {
+        page = 1,
+        limit = 10,
+        sortedBy = 'createdAt',
+        ...searchObject
+      } = queryObj;
+
+      const skip = +limit * (+page - 1);
+
+      const [users, totalCount] = await Promise.all([
+        User.find(searchObject).limit(+limit).skip(skip).sort(sortedBy),
+        User.count(),
+      ]);
+
+      return {
+        page: +page,
+        perPage: +limit,
+        itemCount: totalCount,
+        itemFound: users.length,
+        data: users,
+      };
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

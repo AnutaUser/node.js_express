@@ -24,7 +24,7 @@ class S3Service {
 
   public async uploadFile(
     file: UploadedFile,
-    itemType: 'user',
+    itemType: 'user' | 'car',
     itemId: string
   ): Promise<string> {
     const filePath = this.pathBuilder(itemType, itemId, file.name);

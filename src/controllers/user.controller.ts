@@ -9,22 +9,24 @@ import { ApiError } from '../errors';
 import { userMapper } from '../mapers';
 import { User } from '../models';
 import { s3Service, smsService, userService } from '../services';
-import { IUser } from '../types';
+import { IPaginationResponse, IQuery, IUser } from '../types';
 
 class UserController {
   public async findAll(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response<IUser[]>> {
+  ): Promise<Response<IPaginationResponse<IUser>>> {
     try {
-      const users = await userService.findAll();
+      const response = await userService.findAll(
+        req.query as unknown as IQuery
+      );
 
-      const usersForResponse = users.map((user) =>
+      const usersForResponse = response.data.map((user) =>
         userMapper.userForResponse(user)
       );
 
-      return res.status(200).json(usersForResponse);
+      return res.status(200).json({ ...response, data: usersForResponse });
     } catch (e) {
       next(new ApiError(e.message, e.status));
     }
